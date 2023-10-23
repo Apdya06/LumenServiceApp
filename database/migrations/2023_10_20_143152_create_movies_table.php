@@ -12,9 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('movies', function (Blueprint $table) {
-            $table->id()->autoIncrement();
+            $table->bigIncrements('id');
             $table->string('title', 100);
             $table->string('genre', 100);
+            $table->integer('duration');
+            $table->string('rated', 100);
+            $table->string('producer', 100);
+            $table->string('studio', 100);
+            $table->double('rating');
             $table->timestamps();
         });
     }

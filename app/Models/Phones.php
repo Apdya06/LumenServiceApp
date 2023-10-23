@@ -5,5 +5,5 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class Phones extends Model{
-    protected $fillable = array('brand', 'name');
+    protected $fillable = array('brand', 'name', 'ram', 'storage', 'camera', 'dimensions', 'weight');
 }

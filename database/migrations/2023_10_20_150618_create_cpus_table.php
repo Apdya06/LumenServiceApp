@@ -12,9 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cpus', function (Blueprint $table) {
-            $table->id()->autoIncrement();
+            $table->bigIncrements('id');
             $table->string('brand', 100);
             $table->string('name', 100);
+            $table->string('architecture', 100);
+            $table->integer('transistor_size');
+            $table->double('clock_rate');
+            $table->integer('cores');
+            $table->integer('logical_processor');
             $table->timestamps();
         });
     }

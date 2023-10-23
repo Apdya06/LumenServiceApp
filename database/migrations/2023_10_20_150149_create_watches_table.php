@@ -12,9 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('watches', function (Blueprint $table) {
-            $table->id()->autoIncrement();
+            $table->bigIncrements('id');
             $table->string('brand', 100);
             $table->string('name', 100);
+            $table->integer('production_year');
+            $table->string('material', 100);
+            $table->double('weight');
+            $table->string('dimensions', 100);
+            $table->enum('waterproof', ['yes', 'no'])->default('no');
             $table->timestamps();
         });
     }

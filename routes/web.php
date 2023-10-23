@@ -35,26 +35,46 @@ $router->get('users/{userId}', 'UsersController@show');
 
 $router->group(['middleware' => 'cars'], function() use ($router){
     $router->get('cars','CarsController@index');
-    $router->get('cars/{brandId}','CarsController@show');
+    $router->post('cars','CarsController@store');
+    $router->get('cars/{id}','CarsController@show');
+    $router->put('cars/{id}','CarsController@update');
+    $router->delete('cars/{id}','CarsController@delete');
 });
 
 $router->group(['middleware' => 'phones'], function() use ($router){
     $router->get('phones', 'PhonesController@index');
-    $router->get('phones/{brandId}', 'PhonesController@show');
+    $router->post('phones', 'PhonesController@store');
+    $router->get('phones/{id}', 'PhonesController@show');
+    $router->put('phones/{id}', 'PhonesController@update');
+    $router->delete('phones/{id}', 'PhonesController@delete');
 });
 
 $router->group(['middleware' => 'movies'], function() use ($router){
     $router->get('movies', 'MoviesController@index');
+    $router->post('movies', 'MoviesController@store');
+    $router->get('movies/{id}', 'MoviesController@show');
+    $router->put('movies/{id}', 'MoviesController@update');
+    $router->delete('movies/{id}', 'MoviesController@delete');
 });
 
 $router->group(['middleware' => 'cpus'], function() use ($router){
     $router->get('cpus', 'CpusController@index');
-    $router->get('cpus/{brandId}', 'CpusController@show');
+    $router->post('cpus', 'CpusController@store');
+    $router->get('cpus/{id}', 'CpusController@show');
+    $router->put('cpus/{id}', 'CpusController@update');
+    $router->delete('cpus/{id}', 'CpusController@delete');
 });
 
 $router->group(['middleware' => 'watches'], function() use ($router){
     $router->get('watches', 'WatchesController@index');
-    $router->get('watches/{brandId}', 'WatchesController@show');
+    $router->post('watches', 'WatchesController@store');
+    $router->get('watches/{id}', 'WatchesController@show');
+    $router->put('watches/{id}', 'WatchesController@update');
+    $router->delete('watches/{id}', 'WatchesController@delete');
 });
 
 $router->get('posts', 'PostsController@index');
+$router->post('posts', 'PostsController@store');
+$router->get('posts/{id}', 'PostsController@show');
+$router->put('posts/{id}', 'PostsController@update');
+$router->delete('posts/{id}', 'PostsController@delete');
