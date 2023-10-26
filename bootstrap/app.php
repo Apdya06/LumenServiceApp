@@ -83,6 +83,7 @@ $app->configure('app');
 
 $app->routeMiddleware([
     'login' => App\Http\Middleware\LoginMiddleware::class,
+    'posts' => App\Http\Middleware\PostsMiddleware::class,
     'cars' => App\Http\Middleware\CarsMiddleware::class,
     'phones' => App\Http\Middleware\PhonesMiddleware::class,
     'movies' => App\Http\Middleware\MoviesMiddleware::class,

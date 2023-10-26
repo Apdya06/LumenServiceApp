@@ -72,9 +72,10 @@ $router->group(['middleware' => 'watches'], function() use ($router){
     $router->put('watches/{id}', 'WatchesController@update');
     $router->delete('watches/{id}', 'WatchesController@delete');
 });
-
-$router->get('posts', 'PostsController@index');
-$router->post('posts', 'PostsController@store');
-$router->get('posts/{id}', 'PostsController@show');
-$router->put('posts/{id}', 'PostsController@update');
-$router->delete('posts/{id}', 'PostsController@delete');
+$router->group(['middleware' => 'posts'], function() use ($router){
+    $router->get('posts', 'PostsController@index');
+    $router->post('posts', 'PostsController@store');
+    $router->get('posts/{id}', 'PostsController@show');
+    $router->put('posts/{id}', 'PostsController@update');
+    $router->delete('posts/{id}', 'PostsController@delete');
+});
