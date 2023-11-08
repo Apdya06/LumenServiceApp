@@ -1,8 +1,39 @@
 <?php
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 use App\Models\Post;
 
 class PostsController extends Controller{
-    protected $model = Post::class;
+    protected $model;
+
+    public function __construct(Post $post)
+    {
+        $this->model = $post;
+    }
+
+    private function validation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:5',
+            'content' => 'required|min:10',
+            'status' => 'required|in:draft,published',
+            'user_id' => 'required|exists:users,id',
+        ]);
+        if ($validator->fails()) { return response()->json(['error' => $validator->errors()], 400); }
+    }
+
+    // Overridding method di bawah
+    public function store(Request $request)
+    {
+        if ($this->validation($request)) return $this->validation($request); // validasi request
+        return parent::store($request);
+    }
+
+    public function update(Request $request, $id)
+    {
+        if ($this->validation($request)) return $this->validation($request);
+        return parent::update($request, $id);
+    }
 }

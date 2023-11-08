@@ -45,19 +45,19 @@ class UsersController extends Controller{
         ];
     }
 
-    public function index()
-    {
-        // return "Anda mendapatkan response ini dari <b> Controller </b>";
-        return response()->json($this->users);
-    }
+    // public function index()
+    // {
+    //     // return "Anda mendapatkan response ini dari <b> Controller </b>";
+    //     return response()->json($this->users);
+    // }
 
-    public function show($userId)
-    {
-        foreach ($this->users as $user) {
-            if ($user['id'] == $userId) {
-                return response()->json($user);
-            }
-        }
-        return response()->json(['message' => 'User not found'], 404);
-    }
+    // public function show($userId)
+    // {
+    //     foreach ($this->users as $user) {
+    //         if ($user['id'] == $userId) {
+    //             return response()->json($user);
+    //         }
+    //     }
+    //     return response()->json(['message' => 'User not found'], 404);
+    // }
 }
