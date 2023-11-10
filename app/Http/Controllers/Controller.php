@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class Controller extends BaseController
 {
@@ -35,6 +36,10 @@ class Controller extends BaseController
         return $model->fill($input)->save($input);
     }
 
+    protected function requestsValidator(Request $request, $rules) {
+
+    }
+
     public function index(Request $request) {
         $accHeader = $request->headers->get('Accept');
         // Early return jika header Accept tidak ada atau bukan json dan xml
@@ -42,7 +47,7 @@ class Controller extends BaseController
             ($accHeader != 'application/json' && $accHeader != 'application/xml')) {
             return response('Not Accepttable', 404);
         }
-        $this->multi = $this->model::OrderBy("id", "DESC")->paginate(2)->toArray();
+        $this->multi = $this->model::Where(['user_id' => Auth::user()->id])->OrderBy("id", "DESC")->paginate(2)->toArray();
         if($accHeader == 'application/json') {
             $response = [
                 'total_count' => $this->multi['total'],

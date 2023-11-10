@@ -15,13 +15,14 @@ class PostsController extends Controller{
 
     private function validation(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'title' => 'required|min:5',
             'content' => 'required|min:10',
             'status' => 'required|in:draft,published',
             'user_id' => 'required|exists:users,id',
-        ]);
-        if ($validator->fails()) { return response()->json(['error' => $validator->errors()], 400); }
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) return response()->json(['error' => $validator->errors()], 400);
     }
 
     // Overridding method di bawah
