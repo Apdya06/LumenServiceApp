@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class Controller extends BaseController
 {
@@ -24,22 +25,6 @@ class Controller extends BaseController
         }
     }
 
-    // Method untuk menyimpan data ke tabel untuk method store
-    protected function saveStore($input, $model, $data) {
-        $input = $data;
-        return $model::create($input);
-    }
-
-    // Method untuk menyimpan data ke tabel untuk method update
-    protected function saveUpdate($input, $model, $data) {
-        $input = $data;
-        return $model->fill($input)->save($input);
-    }
-
-    protected function requestsValidator(Request $request, $rules) {
-
-    }
-
     public function index(Request $request) {
         $accHeader = $request->headers->get('Accept');
         // Early return jika header Accept tidak ada atau bukan json dan xml
@@ -47,7 +32,15 @@ class Controller extends BaseController
             ($accHeader != 'application/json' && $accHeader != 'application/xml')) {
             return response('Not Accepttable', 404);
         }
-        $this->multi = $this->model::Where(['user_id' => Auth::user()->id])->OrderBy("id", "DESC")->paginate(2)->toArray();
+
+        if (Auth::user()->role === 'admin')
+        {
+            $this->multi = $this->model::OrderBy("id", "DESC")->paginate(2)->toArray();
+        }
+        else {
+            $this->multi = $this->model::Where(['user_id' => Auth::user()->id])->OrderBy("id", "DESC")->paginate(2)->toArray();
+        }
+
         if($accHeader == 'application/json') {
             $response = [
                 'total_count' => $this->multi['total'],
@@ -82,15 +75,15 @@ class Controller extends BaseController
         }
 
         if($accHeader == 'application/json' && $contentTypeHeader == 'application/json') {
-            $this->input = $this->saveStore($this->input, $this->model, $request->all());
+            $this->input = $this->model::create($request->all());
             return response()->json($this->input, 200);
-        }
+          }
 
         if($accHeader == 'application/xml' && $contentTypeHeader == 'application/xml') {
             $xmlString = $request->getContent();
             $xml = simplexml_load_string($xmlString);
             $data = json_decode(json_encode($xml), true);
-            $this->input = $this->saveStore($this->input, $this->model, $data);
+            $this->model::create($data);
             return response($xmlString, 200)->header('Content-Type', 'application/xml');
         }
     }
@@ -129,15 +122,24 @@ class Controller extends BaseController
         $this->single = $this->model::find($id);
         if(!$this->single) {abort(404);}
 
+        if (Gate::denies('update-post', $this->single)) {
+            return response()->json([
+                'success' => false,
+                'status' => 403,
+                'message' => 'You are unauthorized'
+            ], 403);
+        }
+
         if($accHeader == 'application/json' && $contentTypeHeader == 'application/json') {
-            $this->saveUpdate($this->input, $this->single, $request->all());
+
+            $this->single->fill($request->all())->save();
             return response()->json($this->single, 200);
         }
         if($accHeader == 'application/xml' && $contentTypeHeader == 'application/xml') {
             $xmlString = $request->getContent();
             $xml = simplexml_load_string($xmlString);
             $data = json_decode(json_encode($xml), true);
-            $this->saveUpdate($this->input, $this->single, $data);
+            $this->single::create($data)->save();
 
             $xml = new \SimpleXMLElement('<'.$this->getModelName().'/>');
             $this->setXml($xml, $this->single);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use Illuminate\Support\Facades\Gate;
 
 class PostsController extends Controller{
     protected $model;
@@ -23,6 +24,19 @@ class PostsController extends Controller{
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) return response()->json(['error' => $validator->errors()], 400);
+    }
+
+    public function index(Request $request)
+    {
+        if (Gate::denies('read-post'))
+        {
+            return response()->json([
+                'success' => false,
+                'status' => 403,
+                'message' => 'You are unauthorized'
+            ], 403);
+        }
+        return parent::index($request);
     }
 
     // Overridding method di bawah

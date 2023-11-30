@@ -73,12 +73,13 @@ $router->group(['middleware' => 'watches'], function() use ($router) {
     $router->delete('watches/{id}', 'WatchesController@delete');
 });
 $router->group(['middleware' => 'auth'], function($router) {
-    $router->get('posts', 'PostsController@index');
     $router->post('posts', 'PostsController@store');
     $router->get('posts/{id}', 'PostsController@show');
     $router->put('posts/{id}', 'PostsController@update');
     $router->delete('posts/{id}', 'PostsController@delete');
 });
+
+$router->get('posts', 'PostsController@index');
 
 $router->group(['prefix' => 'auth'], function () use ($router) {
     $router->post('/register', 'AuthController@register');
