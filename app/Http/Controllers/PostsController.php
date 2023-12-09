@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class PostsController extends Controller{
@@ -16,14 +17,21 @@ class PostsController extends Controller{
 
     private function validation(Request $request)
     {
-        $rules = [
+        $validator = Validator::make($request->all(), [
             'title' => 'required|min:5',
             'content' => 'required|min:10',
             'status' => 'required|in:draft,published',
-            'user_id' => 'required|exists:users,id',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-        if ($validator->fails()) return response()->json(['error' => $validator->errors()], 400);
+        ]);
+
+        if (Auth::user()->role == 'admin') {
+            $validator->sometimes('user_id', 'required|exists:users,id', function ($input) {
+                return Auth::user()->id;
+            });
+        }
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
     }
 
     public function index(Request $request)
@@ -33,7 +41,7 @@ class PostsController extends Controller{
             return response()->json([
                 'success' => false,
                 'status' => 403,
-                'message' => 'You are unauthorized'
+                'message' => 'You are unauthorized to read any posts'
             ], 403);
         }
         return parent::index($request);
@@ -43,6 +51,14 @@ class PostsController extends Controller{
     public function store(Request $request)
     {
         if ($this->validation($request)) return $this->validation($request); // validasi request
+
+        if (Gate::denies('store-post')) {
+            return response()->json([
+                'success' => false,
+                'status' => 403,
+                'message' => 'You are unauthorized to store any posts'
+            ], 403);
+        }
         return parent::store($request);
     }
 
