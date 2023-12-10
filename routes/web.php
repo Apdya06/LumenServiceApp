@@ -72,7 +72,7 @@ $router->group(['middleware' => 'watches'], function() use ($router) {
     $router->put('watches/{id}', 'WatchesController@update');
     $router->delete('watches/{id}', 'WatchesController@delete');
 });
-$router->group(['middleware' => 'auth'], function($router) {
+$router->group(['middleware' => 'post'], function($router) {
 
 });
 

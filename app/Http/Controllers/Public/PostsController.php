@@ -17,13 +17,13 @@ class PostsController extends Controller{
 
     public function index(Request $request)
     {
-        if (Gate::denies('public-post')) {
-            return response()->json([
-                'success' => false,
-                'status' => 403,
-                'message' => 'You are unauthorized to read this post'
-            ], 403);
-        }
+        // if (Gate::denies('public-post')) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'status' => 403,
+        //         'message' => 'You are unauthorized to read this post'
+        //     ], 403);
+        // }
         $accHeader = $request->headers->get('Accept');
 
         if($accHeader === '*/*' || empty($accHeader) ||
@@ -31,7 +31,7 @@ class PostsController extends Controller{
             return response('Not Accepttable', 404);
         }
 
-        $posts = $this->model::OrderBy("id", "DESC")->paginate(2)->toArray();
+        $posts = $this->model::with('user')->OrderBy("id", "DESC")->paginate(5)->toArray();
 
         if($accHeader == 'application/json') {
             $response = [
@@ -57,20 +57,23 @@ class PostsController extends Controller{
     }
 
     public function show(Request $request, $id) {
-        if (Gate::denies('public-post')) {
-            return response()->json([
-                'success' => false,
-                'status' => 403,
-                'message' => 'You are unauthorized to read this post'
-            ], 403);
-        }
+        // if (Gate::denies('public-post')) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'status' => 403,
+        //         'message' => 'You are unauthorized to read this post'
+        //     ], 403);
+        // }
+
         $accHeader = $request->headers->get('Accept');
         if($accHeader === '*/*' || empty($accHeader) ||
             ($accHeader != 'application/json' && $accHeader != 'application/xml')) {
             return response('Not Accepttable', 404);
         }
 
-        $post = $this->model::find($id);
+        $post = $this->model::with(['user' => function($query){
+            $query->select('id', 'name');
+        }])->find($id);
 
         if (!$post) {
             return response()->json([
