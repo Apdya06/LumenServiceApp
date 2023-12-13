@@ -82,6 +82,10 @@ $router->get('posts/{id}', 'PostsController@show');
 $router->put('posts/{id}', 'PostsController@update');
 $router->delete('posts/{id}', 'PostsController@delete');
 
+$router->post('profiles', 'ProfileController@store');
+$router->get('profiles/{userId}', 'ProfileController@show');
+$router->get('profiles/image/{imageName}', 'ProfileController@image');
+
 $router->group(['prefix' => 'public'], function () use ($router) {
     $router->get('posts', 'Public\PostsController@index');
     $router->get('posts/{id}', 'Public\PostsController@show');
