@@ -124,6 +124,18 @@ $router->group(['middleware' => 'auth'], function($router) {
             }
         });
 
+        $router->get('/video/{id}', function(Request $request, $id) {
+            $controller = 'App\Http\Controllers\PostsController';
+            $accHeader = $request->headers->get('Accept');
+            if ($accHeader === 'application/json') {
+                return app($controller)->videojson($id);
+            } else if ($accHeader === 'application/xml') {
+                return app($controller)->videoxml($id);
+            } else {
+                return response()->json(['message' => 'Unacceptable'], 406);
+            }
+        });
+
         $router->put('/{id}', function(Request $request, $id) {
             $controller = 'App\Http\Controllers\PostsController';
             $accHeader = $request->headers->get('Accept');

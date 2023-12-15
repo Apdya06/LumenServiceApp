@@ -77,9 +77,17 @@ class PostsController extends Controller{
         if($request->hasFile('image')){
             $firstName = str_replace(' ', '_', Profile::where('user_id', Auth::user()->id)->value('first_name'));
             $lastName = str_replace(' ', '_', Profile::where('user_id', Auth::user()->id)->value('last_name'));
-            $imgName = Auth::user()->id . '_' . $firstName . '_' . $lastName . Str::random(15);
+            $imgName = Auth::user()->id . '_' . $firstName . '_' . $lastName . 'img' . Str::random(5);
             $request->file('image')->move(storage_path('uploads/posts_images'), $imgName);
             $data['image'] = $imgName;
+        }
+
+        if($request->hasFile('video')){
+            $firstName = str_replace(' ', '_', Profile::where('user_id', Auth::user()->id)->value('first_name'));
+            $lastName = str_replace(' ', '_', Profile::where('user_id', Auth::user()->id)->value('last_name'));
+            $vidName = Auth::user()->id . '_' . $firstName . '_' . $lastName . 'vid' . Str::random(5) . '.mp4';
+            $request->file('video')->move(storage_path('uploads/posts_videos'), $vidName);
+            $data['video'] = $vidName;
         }
 
         if (Auth::user()->role === 'admin') {
@@ -110,6 +118,28 @@ class PostsController extends Controller{
         }
 
         return response()->json(["message" => "Image not found"], 404);
+    }
+
+    public function videojson($id)
+    {
+        $videoName = $this->model::where('user_id', Auth::user()->id)->find($id);
+
+        if (Gate::denies('detail-post', $videoName)) {
+            return response()->json([
+                'success' => false,
+                'status' => 403,
+                'message' => 'You are unauthorized to read this post'
+            ], 403);
+        }
+
+        $videoPath =  storage_path('uploads/posts_videos' . '/' . $videoName->video);
+        if (file_exists($videoPath))
+        {
+            $file = file_get_contents($videoPath);
+            return response($file, 200)->header('Content-Type', 'video/mp4');
+        }
+
+        return response()->json(["message" => "Video not found"], 404);
     }
 
     public function updatejson(Request $request, $id)
