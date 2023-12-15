@@ -63,7 +63,7 @@ class ProfileController extends Controller{
         return response()->json($profile, 200);
     }
 
-    public function show(Request $request, $userId)
+    public function show($userId)
     {
         $profile = Profile::where('user_id', $userId)->first();
         if(!$profile) abort(404);
@@ -80,8 +80,6 @@ class ProfileController extends Controller{
             return response($file, 200)->header('Content-Type', 'image/jpeg');
         }
 
-        return response()->json([
-            "message" => "Image not found"
-        ], 401);
+        return response()->json(["message" => "Image not found"], 404);
     }
 }

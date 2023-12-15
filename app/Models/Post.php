@@ -10,7 +10,7 @@ class Post extends Model{
      *
      * @var string[]
      */
-    protected $fillable = array('title', 'content', 'status', 'user_id');
+    protected $fillable = array('title', 'content', 'status', 'user_id', 'image');
     public $timestamps = true;
 
     public function user()

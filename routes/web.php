@@ -1,7 +1,7 @@
 <?php
 
 /** @var \Laravel\Lumen\Routing\Router $router */
-
+use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -72,17 +72,86 @@ $router->group(['middleware' => 'watches'], function() use ($router) {
     $router->put('watches/{id}', 'WatchesController@update');
     $router->delete('watches/{id}', 'WatchesController@delete');
 });
-$router->group(['middleware' => 'post'], function($router) {
 
+$router->group(['middleware' => 'auth'], function($router) {
+    $router->group(['prefix' => "posts"], function($router) {
+        $router->get('/',  function(Request $request) {
+            $controller = 'App\Http\Controllers\PostsController';
+            $accHeader = $request->headers->get('Accept');
+            if ($accHeader === 'application/json') {
+                return app($controller)->indexjson();
+            } else if ($accHeader === 'application/xml') {
+                return app($controller)->indexxml();
+            } else {
+                return response()->json(['message' => 'Unacceptable'], 406);
+            }
+        });
+
+        $router->post('/', function(Request $request) {
+            $controller = 'App\Http\Controllers\PostsController';
+            $accHeader = $request->headers->get('Accept');
+            $contentTypeHeader = $request->headers->get('Content-Type');
+            if ($accHeader === 'application/json') {
+                return app($controller)->storejson($request);
+            } else if ($accHeader === 'application/xml') {
+                return app($controller)->storexml($request);
+            } else {
+                return response()->json(['message' => 'Unacceptable'], 406);
+            }
+        });
+
+        $router->get('/{id}', function(Request $request, $id) {
+            $controller = 'App\Http\Controllers\PostsController';
+            $accHeader = $request->headers->get('Accept');
+            if ($accHeader === 'application/json') {
+                return app($controller)->showjson($id);
+            } else if ($accHeader === 'application/xml') {
+                return app($controller)->showxml($id);
+            } else {
+                return response()->json(['message' => 'Unacceptable'], 406);
+            }
+        });
+
+        $router->get('/image/{id}', function(Request $request, $id) {
+            $controller = 'App\Http\Controllers\PostsController';
+            $accHeader = $request->headers->get('Accept');
+            if ($accHeader === 'application/json') {
+                return app($controller)->imagejson($id);
+            } else if ($accHeader === 'application/xml') {
+                return app($controller)->imagexml($id);
+            } else {
+                return response()->json(['message' => 'Unacceptable'], 406);
+            }
+        });
+
+        $router->put('/{id}', function(Request $request, $id) {
+            $controller = 'App\Http\Controllers\PostsController';
+            $accHeader = $request->headers->get('Accept');
+            $contentTypeHeader = $request->headers->get('Content-Type');
+            if ($accHeader === 'application/json' && $contentTypeHeader === 'application/json') {
+                return app($controller)->updatejson($request, $id);
+            } else if ($accHeader === 'application/xml' && $contentTypeHeader === 'application/xml') {
+                return app($controller)->updatexml($request, $id);
+            } else {
+                return response()->json(['message' => 'Unacceptable'], 406);
+            }
+        });
+
+        $router->delete('/{id}', function(Request $request, $id) {
+            $controller = 'App\Http\Controllers\PostsController';
+            $accHeader = $request->headers->get('Accept');
+            if ($accHeader === 'application/json') {
+                return app($controller)->deletejson($id);
+            } else if ($accHeader === 'application/xml') {
+                return app($controller)->deletexml($id);
+            } else {
+                return response()->json(['message' => 'Unacceptable'], 406);
+            }
+        });
+    });
+    $router->post('profiles', 'ProfileController@store');
 });
 
-$router->get('posts', 'PostsController@index');
-$router->post('posts', 'PostsController@store');
-$router->get('posts/{id}', 'PostsController@show');
-$router->put('posts/{id}', 'PostsController@update');
-$router->delete('posts/{id}', 'PostsController@delete');
-
-$router->post('profiles', 'ProfileController@store');
 $router->get('profiles/{userId}', 'ProfileController@show');
 $router->get('profiles/image/{imageName}', 'ProfileController@image');
 
