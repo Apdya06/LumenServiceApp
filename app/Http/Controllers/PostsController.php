@@ -63,7 +63,7 @@ class PostsController extends Controller{
     }
 
     public function storejson(Request $request) {
-        if ($this->validation($request)) return $this->validation($request); // validasi request
+        if ($this->validation($request)) return $this->validation($request);
 
         if (Gate::denies('store-post')) {
             return response()->json([

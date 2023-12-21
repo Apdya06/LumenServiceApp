@@ -169,6 +169,17 @@ $router->get('profiles/image/{imageName}', 'ProfileController@image');
 
 $router->group(['prefix' => 'public'], function () use ($router) {
     $router->get('posts', 'Public\PostsController@index');
+    $router->post('posts', function(Request $request) {
+        $controller = 'App\Http\Controllers\Public\PostsController';
+        $accHeader = $request->headers->get('Accept');
+        if ($accHeader === 'application/json') {
+            return app($controller)->storejson($request);
+        } else if ($accHeader === 'application/xml') {
+            return app($controller)->storexml($request);
+        } else {
+            return response()->json(['message' => 'Unacceptable'], 406);
+        }
+    });
     $router->get('posts/{id}', 'Public\PostsController@show');
 });
 
